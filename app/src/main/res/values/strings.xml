@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Focusify</string>
+    <string name="settings_button">Settings Button</string>
+    <string name="stats_button">Stats Button</string>
+    <string name="click_the_plus_to_begin_the_cycle">Click the plus to begin the cycle</string>
+    <string name="empty_time">00:00</string>
+</resources>
