@@ -8,21 +8,22 @@ import {
   ViewStyle
 } from "react-native";
 
-export type ScreenWrapperProps = {
-  style?: ViewStyle;
-  children: React.ReactNode;
+export type PomodoroSettings = {
+  work: number;       // in minutes
+  shortBreak: number; // in minutes
+  longBreak: number;  // in minutes
 };
-export type ModalWrapperProps = {
-  style?: ViewStyle;
-  children: React.ReactNode;
-  bg?: string;
+
+export type PomodoroHistoryEntry = {
+  totalCycles: number;
+  totalFocusMinutes: number;
+  totalBreakMinutes: number;
 };
-export type accountOptionType = {
-  title: string;
-  icon: React.ReactNode;
-  bgColor: string;
-  routeName?: any;
+
+export type PomodoroHistory = {
+  [date: string]: PomodoroHistoryEntry;
 };
+
 
 export type TypoProps = {
   size?: number;
@@ -76,56 +77,3 @@ export interface CustomButtonProps extends TouchableOpacityProps {
   loading?: boolean;
   children: React.ReactNode;
 }
-
-export type ImageUploadProps = {
-  file?: any;
-  onSelect: (file: any) => void;
-  onClear: () => void;
-  containerStyle?: ViewStyle;
-  imageStyle?: ViewStyle;
-  placeholder?: string;
-};
-
-export type UserType = {
-  uid?: string;
-  email?: string | null;
-  name: string | null;
-  image?: any;
-} | null;
-
-export type UserDataType = {
-  name: string;
-  image?: any;
-};
-
-export type AuthContextType = {
-  user: UserType;
-  setUser: Function;
-  login: (
-    email: string,
-    password: string
-  ) => Promise<{ success: boolean; msg?: string }>;
-  register: (
-    email: string,
-    password: string,
-    name: string
-  ) => Promise<{ success: boolean; msg?: string }>;
-  updateUserData: (userId: string) => Promise<void>;
-};
-
-export type ResponseType = {
-  success: boolean;
-  data?: any;
-  msg?: string;
-};
-
-export type WalletType = {
-  id?: string;
-  name: string;
-  amount?: number;
-  totalIncome?: number;
-  totalExpenses?: number;
-  image: any;
-  uid?: string;
-  created?: Date;
-};
