@@ -2,30 +2,31 @@ import Header from "@/components/Header";
 import Typo from "@/components/Typo";
 import { colors } from "@/constants/theme";
 import { verticalScale } from "@/utils/styling";
+import { useRouter } from 'expo-router';
 import { PlusIcon } from "phosphor-react-native";
 import React from "react";
-import {
-  StatusBar,
-  StyleSheet,
-  TouchableOpacity,
-  View
-} from "react-native";
+import { StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const welcome = () => {
+  const router = useRouter();
+  let newCycle = () => {
+    router.push("/cycle");
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar barStyle="light-content" />
       {/* Header */}
-      <Header/>
+      <Header />
       {/* Home Page Content */}
       <View style={styles.pageContent}>
         {/* Text */}
-        <Typo size={32} color={colors.primary} style={{textAlign: "center"}}>
+        <Typo size={32} color={colors.primary} style={{ textAlign: "center" }}>
           Click the plus to begin a cycle
         </Typo>
         {/* Button */}
-        <TouchableOpacity>
+        <TouchableOpacity onPress={newCycle}>
           <View style={styles.newButtonWrap}>
             <PlusIcon
               size={verticalScale(100)}
@@ -43,14 +44,11 @@ const welcome = () => {
 export default welcome;
 
 const styles = StyleSheet.create({
-  
   logoContainer: {
     justifyContent: "center",
     alignItems: "center",
   },
-  
-  
-  
+
   pageContent: {
     flex: 1,
     flexDirection: "column",
@@ -66,6 +64,6 @@ const styles = StyleSheet.create({
     borderWidth: 5,
     borderColor: colors.neutral400,
     borderRadius: 65,
-    borderCurve: "circular"
+    borderCurve: "circular",
   },
 });
