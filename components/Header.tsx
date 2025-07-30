@@ -1,8 +1,7 @@
-import { colors, radius } from "@/constants/theme";
-import { verticalScale } from "@/utils/styling";
 import { GearIcon, TrophyIcon } from "phosphor-react-native";
 import React from "react";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
+import IconButton from "./IconButton";
 
 const Header = () => {
   return (
@@ -15,24 +14,8 @@ const Header = () => {
           />
         </View>
         <View style={styles.iconButtonsContainer}>
-          <TouchableOpacity>
-            <View style={styles.iconContainer}>
-              <TrophyIcon
-                size={verticalScale(36)}
-                color={colors.primary}
-                weight="fill"
-              />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <View style={styles.iconContainer}>
-              <GearIcon
-                size={verticalScale(36)}
-                color={colors.primary}
-                weight="fill"
-              />
-            </View>
-          </TouchableOpacity>
+          <IconButton onPress={()=> {}} icon={TrophyIcon} />
+          <IconButton onPress={()=> {}} icon={GearIcon} />
         </View>
       </View>
   );
@@ -54,15 +37,5 @@ const styles = StyleSheet.create({
   iconButtonsContainer: {
     flexDirection: "row",
     gap: 10,
-  },
-  iconContainer: {
-    backgroundColor: colors.white,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 5,
-    borderWidth: 2,
-    borderColor: colors.primary,
-    borderRadius: radius._30,
-    borderCurve: "circular",
-  },
+  }
 });

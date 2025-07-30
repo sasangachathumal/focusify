@@ -1,3 +1,4 @@
+import type { IconProps } from "phosphor-react-native";
 import React, { ReactNode } from "react";
 import {
   TextInput,
@@ -42,13 +43,13 @@ export type IconComponent = React.ComponentType<{
   fill?: string;
 }>;
 
-export type IconProps = {
-  name: string;
-  color?: string;
-  size?: number;
-  strokeWidth?: number;
-  fill?: string;
-};
+// export type IconProps = {
+//   name: string;
+//   color?: string;
+//   size?: number;
+//   strokeWidth?: number;
+//   fill?: string;
+// };
 
 export type HeaderProps = {
   title?: string;
@@ -77,3 +78,12 @@ export interface CustomButtonProps extends TouchableOpacityProps {
   loading?: boolean;
   children: React.ReactNode;
 }
+
+export type IconButtonProps = {
+  onPress: () => void;
+  icon: React.FC<IconProps>; // Any icon component from phosphor-react-native
+  size?: number;
+  color?: string;
+  weight?: IconProps["weight"];
+  buttonStyle?: ViewStyle;
+};
