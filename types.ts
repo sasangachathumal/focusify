@@ -77,6 +77,7 @@ export interface CustomButtonProps extends TouchableOpacityProps {
   onPress?: () => void;
   loading?: boolean;
   children: React.ReactNode;
+  disabled?: boolean;
 }
 
 export type IconButtonProps = {
@@ -86,4 +87,12 @@ export type IconButtonProps = {
   color?: string;
   weight?: IconProps["weight"];
   buttonStyle?: ViewStyle;
+};
+
+export type SettingsSheetContextType = {
+  openSettingsSheet: () => void;
+};
+
+export type SettingsSheetProviderProps = {
+  children: any | null;
 };

@@ -1,9 +1,11 @@
 import { GearIcon, TrophyIcon } from "phosphor-react-native";
 import React from "react";
 import { Image, StyleSheet, View } from "react-native";
+import { useSettingsSheet } from '../app/settingsSheetProvider';
 import IconButton from "./IconButton";
 
 const Header = () => {
+  const { openSettingsSheet } = useSettingsSheet();
   return (
     <View style={styles.headerContainer}>
         <View>
@@ -15,7 +17,7 @@ const Header = () => {
         </View>
         <View style={styles.iconButtonsContainer}>
           <IconButton onPress={()=> {}} icon={TrophyIcon} />
-          <IconButton onPress={()=> {}} icon={GearIcon} />
+          <IconButton onPress={openSettingsSheet} icon={GearIcon} />
         </View>
       </View>
   );

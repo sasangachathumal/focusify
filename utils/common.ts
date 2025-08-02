@@ -67,3 +67,7 @@ export const getYearsRange = (startYear: number, endYear: number): any => {
   // return result;
   return result.reverse();
 };
+
+export const formatTimeUnit = (num: number): string => {
+  return num < 10 ? `0${num}` : `${num}`;
+};

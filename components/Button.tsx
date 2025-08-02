@@ -10,6 +10,7 @@ const Button = ({
   onPress,
   loading = false,
   children,
+  disabled = false
 }: CustomButtonProps) => {
     if (loading) {
         return (
@@ -19,7 +20,7 @@ const Button = ({
         )
     }
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.button, style]}>
+    <TouchableOpacity disabled={disabled} onPress={onPress} style={[styles.button, style]}>
       {children}
     </TouchableOpacity>
   );
