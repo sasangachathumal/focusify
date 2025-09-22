@@ -71,3 +71,7 @@ export const getYearsRange = (startYear: number, endYear: number): any => {
 export const formatTimeUnit = (num: number): string => {
   return num < 10 ? `0${num}` : `${num}`;
 };
+
+export const getCurrentDate = (): string => {
+  return new Date().toISOString();
+}

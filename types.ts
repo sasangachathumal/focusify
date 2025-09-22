@@ -25,6 +25,12 @@ export type PomodoroHistory = {
   [date: string]: PomodoroHistoryEntry;
 };
 
+export type BreakOverlayProps = {
+  visible: boolean;
+  onFinish: () => void;
+  type: "shortBreak" | "longBreak";
+};
+
 
 export type TypoProps = {
   size?: number;

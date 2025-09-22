@@ -3,6 +3,8 @@ import IconButton from "@/components/IconButton";
 import Stepper from "@/components/Stepper";
 import Typo from "@/components/Typo";
 import { colors } from "@/constants/theme";
+import { updatePomodoroHistory } from "@/storage/pomodoroHistory";
+import { getCurrentDate } from "@/utils/common";
 import { verticalScale } from "@/utils/styling";
 import {
   ArrowClockwiseIcon,
@@ -13,14 +15,22 @@ import {
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import BreakOverlay from "../components/BreakOverlay";
 import { getPomodoroSettings } from "../storage/pomodoroStorage";
 
 const Cycle = () => {
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [workDuration, setWorkDuration] = useState<number>(20 * 60);
+  const [shortBreak, setShortBreak] = useState<number>(20 * 60);
+  const [longBreak, setLongBreak] = useState<number>(20 * 60);
   const [activeCycle, setActiveCycle] = useState<number>(1);
   const [timeLeft, setTimeLeft] = useState<number>(0);
+
+  const [overlayVisible, setOverlayVisible] = useState(false);
+  const [overlayType, setOverlayType] = useState<"shortBreak" | "longBreak">(
+    "shortBreak"
+  );
 
   useEffect(() => {
     (async () => {
@@ -28,6 +38,12 @@ const Cycle = () => {
       if (settings?.work) {
         setWorkDuration(0.1 * 60);
         setTimeLeft(0.1 * 60);
+      }
+      if (settings?.shortBreak) {
+        setShortBreak(settings.shortBreak);
+      }
+      if (settings?.longBreak) {
+        setLongBreak(settings.longBreak);
       }
     })();
   }, []);
@@ -42,9 +58,18 @@ const Cycle = () => {
     } else if (timeLeft === 0 && isRunning) {
       setIsRunning(false);
       setIsPaused(false);
-      // updatePomodoroHistory(workDuration); // ✅ Save cycle history
+
       if (activeCycle <= 4) {
         setActiveCycle(activeCycle + 1);
+      }
+
+      if (activeCycle < 4) {
+        startOverlay("shortBreak");
+      }
+
+      if (activeCycle === 4) {
+        startOverlay("longBreak");
+        // updatePomodoroHistory(workDuration); // ✅ Save cycle history
       }
     }
 
@@ -53,7 +78,21 @@ const Cycle = () => {
     };
   }, [isRunning, isPaused, timeLeft, activeCycle]);
 
-  // Format seconds to mm:ss
+  const historyUpdate = () => {
+    const historyObj = {
+      date: getCurrentDate(),
+      cycle: 1,
+      focusMinutes: workDuration * 4,
+      breakMinutes: shortBreak * 4 + longBreak,
+    };
+    updatePomodoroHistory(
+      historyObj.date,
+      historyObj.cycle,
+      historyObj.focusMinutes,
+      historyObj.breakMinutes
+    );
+  };
+
   const formatTime = (seconds: number): string => {
     const m = Math.floor(seconds / 60)
       .toString()
@@ -62,7 +101,21 @@ const Cycle = () => {
     return `${m}:${s}`;
   };
 
-  // Controls
+  const startOverlay = (type: "shortBreak" | "longBreak") => {
+    setOverlayType(type);
+    setOverlayVisible(true);
+  };
+
+  const handleFinish = () => {
+    setOverlayVisible(false);
+    console.log('activeCycle', activeCycle);
+    if (activeCycle < 4) {
+      startTimer();
+    } else if (activeCycle === 4) {
+      resetTimer();
+    }
+  };
+
   const startTimer = () => {
     setTimeLeft(workDuration);
     setIsRunning(true);
@@ -85,57 +138,64 @@ const Cycle = () => {
   };
 
   return (
-    <SafeAreaView>
-      <Header />
-      <View style={styles.timerContainer}>
-        <View style={styles.timer}>
-          <Typo size={60} color={colors.primary} fontWeight={"bold"}>
-            {formatTime(timeLeft)}
-          </Typo>
+    <>
+      <SafeAreaView>
+        <Header />
+        <View style={styles.timerContainer}>
+          <View style={styles.timer}>
+            <Typo size={60} color={colors.primary} fontWeight={"bold"}>
+              {formatTime(timeLeft)}
+            </Typo>
+          </View>
         </View>
-      </View>
-      <View style={styles.cycleContainer}>
-        <Stepper currentStep={activeCycle} />
-      </View>
-      <View style={styles.actionContainer}>
-        {!isRunning && (
-          <IconButton
-            onPress={startTimer}
-            icon={PlayIcon}
-            color={colors.white}
-            buttonStyle={styles.actionStyle}
-            size={32}
-          />
-        )}
-        {isRunning && !isPaused && (
-          <IconButton
-            onPress={pauseTimer}
-            icon={PauseIcon}
-            color={colors.white}
-            buttonStyle={styles.actionStyle}
-            size={32}
-          />
-        )}
-        {isRunning && isPaused && (
-          <IconButton
-            onPress={resumeTimer}
-            icon={ArrowClockwiseIcon}
-            color={colors.white}
-            buttonStyle={styles.actionStyle}
-            size={32}
-          />
-        )}
-        {(isRunning || isPaused) && (
-          <IconButton
-            onPress={resetTimer}
-            icon={StopIcon}
-            color={colors.white}
-            buttonStyle={styles.actionStyle}
-            size={32}
-          />
-        )}
-      </View>
-    </SafeAreaView>
+        <View style={styles.cycleContainer}>
+          <Stepper currentStep={activeCycle} />
+        </View>
+        <View style={styles.actionContainer}>
+          {!isRunning && (
+            <IconButton
+              onPress={startTimer}
+              icon={PlayIcon}
+              color={colors.white}
+              buttonStyle={styles.actionStyle}
+              size={32}
+            />
+          )}
+          {isRunning && !isPaused && (
+            <IconButton
+              onPress={pauseTimer}
+              icon={PauseIcon}
+              color={colors.white}
+              buttonStyle={styles.actionStyle}
+              size={32}
+            />
+          )}
+          {isRunning && isPaused && (
+            <IconButton
+              onPress={resumeTimer}
+              icon={ArrowClockwiseIcon}
+              color={colors.white}
+              buttonStyle={styles.actionStyle}
+              size={32}
+            />
+          )}
+          {(isRunning || isPaused) && (
+            <IconButton
+              onPress={resetTimer}
+              icon={StopIcon}
+              color={colors.white}
+              buttonStyle={styles.actionStyle}
+              size={32}
+            />
+          )}
+        </View>
+      </SafeAreaView>
+      <BreakOverlay
+        visible={overlayVisible}
+        onFinish={handleFinish}
+        type={overlayType}
+      />
+    </>
   );
 };
 
@@ -178,6 +238,6 @@ const styles = StyleSheet.create({
   },
   cycleContainer: {
     padding: 10,
-    marginVertical: verticalScale(50)
-  }
+    marginVertical: verticalScale(50),
+  },
 });
