@@ -1,3 +1,4 @@
+import { verticalScale } from "@/utils/styling";
 import { GearIcon, TrophyIcon } from "phosphor-react-native";
 import React from "react";
 import { Image, StyleSheet, View } from "react-native";
@@ -31,9 +32,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 10,
+    marginBottom: verticalScale(32)
   },
   logo: {
-    height: 150,
+    height: 100,
     aspectRatio: 1,
   },
   iconButtonsContainer: {

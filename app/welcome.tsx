@@ -5,7 +5,7 @@ import { verticalScale } from "@/utils/styling";
 import { useRouter } from 'expo-router';
 import { PlusIcon } from "phosphor-react-native";
 import React from "react";
-import { StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const welcome = () => {
@@ -16,7 +16,6 @@ const welcome = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar barStyle="light-content" />
       {/* Header */}
       <Header />
       {/* Home Page Content */}

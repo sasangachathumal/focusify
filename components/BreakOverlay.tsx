@@ -2,6 +2,7 @@ import { colors } from "@/constants/theme";
 import { getPomodoroSettings } from "@/storage/pomodoroStorage";
 import { BreakOverlayProps } from "@/types";
 import { verticalScale } from "@/utils/styling";
+import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import React, { useEffect, useState } from "react";
 import { Modal, StyleSheet, View } from "react-native";
 import Button from "./Button";
@@ -12,6 +13,14 @@ const BreakOverlay = ({ visible, onFinish, type }: BreakOverlayProps) => {
   const [text, setText] = useState<string>("");
   const [duration, setDuration] = useState<number>(20 * 60);
   const [isRunning, setIsRunning] = useState(false);
+
+  useEffect(() => {
+    if (visible) {
+      activateKeepAwakeAsync();
+    } else {
+      deactivateKeepAwake();
+    }
+  }, [visible]);
 
   useEffect(() => {
     if (!visible) return;
@@ -43,13 +52,17 @@ const BreakOverlay = ({ visible, onFinish, type }: BreakOverlayProps) => {
       }, 1000);
     } else if (timeLeft === 0 && isRunning) {
       setIsRunning(false);
-        onFinish();
+      if (type === "longBreak") {
+        onFinish(true);
+      } else {
+        onFinish(false);
+      }
     }
 
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isRunning, timeLeft, onFinish]);
+  }, [isRunning, timeLeft, onFinish, type]);
 
   useEffect(() => {
     if (visible) setTimeLeft(duration);
@@ -61,13 +74,25 @@ const BreakOverlay = ({ visible, onFinish, type }: BreakOverlayProps) => {
     return `${m}:${s < 10 ? "0" : ""}${s}`;
   };
 
+  const onDismissed = () => {
+    if (type === "longBreak") {
+      onFinish(true);
+    } else {
+      onFinish(false);
+    }
+  };
+
   if (!visible) return null;
 
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.overlay}>
         <View>
-          <Typo size={verticalScale(72)}>🧘</Typo>
+          {type === "shortBreak" ? (
+            <Typo size={verticalScale(72)}>☕</Typo>
+            ) : (
+              <Typo size={verticalScale(72)}>🌴</Typo>
+            )}
         </View>
         <View>
           <Typo size={48} color={colors.white} fontWeight={"bold"}>
@@ -80,10 +105,10 @@ const BreakOverlay = ({ visible, onFinish, type }: BreakOverlayProps) => {
           </Typo>
         </View>
         <View>
-          <Button
-            style={styles.dismissButton}
-            onPress={onFinish}>
-            <Typo color={colors.black} fontWeight={"bold"}>DISMISS</Typo>
+          <Button style={styles.dismissButton} onPress={onDismissed}>
+            <Typo color={colors.black} fontWeight={"bold"}>
+              DISMISS
+            </Typo>
           </Button>
         </View>
       </View>
@@ -110,6 +135,6 @@ const styles = StyleSheet.create({
     paddingStart: 24,
     paddingTop: 12,
     paddingBottom: 12,
-    height: verticalScale(60)
-  }
+    height: verticalScale(60),
+  },
 });

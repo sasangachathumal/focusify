@@ -27,7 +27,7 @@ export type PomodoroHistory = {
 
 export type BreakOverlayProps = {
   visible: boolean;
-  onFinish: () => void;
+  onFinish: (isLongBreak: boolean) => void;
   type: "shortBreak" | "longBreak";
 };
 

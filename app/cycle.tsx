@@ -6,6 +6,7 @@ import { colors } from "@/constants/theme";
 import { updatePomodoroHistory } from "@/storage/pomodoroHistory";
 import { getCurrentDate } from "@/utils/common";
 import { verticalScale } from "@/utils/styling";
+import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import {
   ArrowClockwiseIcon,
   PauseIcon,
@@ -31,6 +32,14 @@ const Cycle = () => {
   const [overlayType, setOverlayType] = useState<"shortBreak" | "longBreak">(
     "shortBreak"
   );
+
+  useEffect(() => {
+  if ((isRunning && !isPaused) || overlayVisible) {
+    activateKeepAwakeAsync();
+  } else {
+    deactivateKeepAwake();
+  }
+}, [isRunning, isPaused, overlayVisible]);
 
   useEffect(() => {
     (async () => {
@@ -59,24 +68,28 @@ const Cycle = () => {
       setIsRunning(false);
       setIsPaused(false);
 
-      if (activeCycle <= 4) {
-        setActiveCycle(activeCycle + 1);
-      }
-
       if (activeCycle < 4) {
+        setActiveCycle(activeCycle + 1);
         startOverlay("shortBreak");
-      }
-
-      if (activeCycle === 4) {
+      } else if (activeCycle === 4) {
+        setTimeLeft(workDuration);
+        setIsRunning(false);
+        setIsPaused(false);
+        setActiveCycle(1);
         startOverlay("longBreak");
         // updatePomodoroHistory(workDuration); // ✅ Save cycle history
+      } else {
+        setTimeLeft(workDuration);
+        setIsRunning(false);
+        setIsPaused(false);
+        setActiveCycle(1);
       }
     }
 
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isRunning, isPaused, timeLeft, activeCycle]);
+  }, [isRunning, isPaused, timeLeft, activeCycle, workDuration]);
 
   const historyUpdate = () => {
     const historyObj = {
@@ -106,12 +119,14 @@ const Cycle = () => {
     setOverlayVisible(true);
   };
 
-  const handleFinish = () => {
+  const handleFinish = (isLongBreak: boolean) => {
     setOverlayVisible(false);
     console.log('activeCycle', activeCycle);
-    if (activeCycle < 4) {
+    if (isLongBreak) {
+      resetTimer();
+    } else if (activeCycle <= 4) {
       startTimer();
-    } else if (activeCycle === 4) {
+    } else {
       resetTimer();
     }
   };
