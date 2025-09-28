@@ -40,3 +40,7 @@ export const getPomodoroHistory = async (): Promise<PomodoroHistory> => {
     return {};
   }
 };
+
+export const clearHistory = async () => {
+  await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify({}));
+};

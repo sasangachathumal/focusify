@@ -1,3 +1,5 @@
+import { useWindowDimensions } from "react-native";
+
 export const getLast7Days = () => {
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const result = [];
@@ -74,4 +76,30 @@ export const formatTimeUnit = (num: number): string => {
 
 export const getCurrentDate = (): string => {
   return new Date().toISOString();
+}
+
+export const formatTime = (seconds: number): string => {
+  const m = Math.floor(seconds / 60)
+    .toString()
+    .padStart(2, "0");
+  const s = (seconds % 60).toString().padStart(2, "0");
+  return `${m}:${s}`;
+};
+
+export const formatDate = (ISODate: string): string => {
+  if (!ISODate) {
+    return "";
+  }
+  const date = new Date(ISODate);
+  return new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+};
+
+export function useOrientation() {
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  return { isLandscape, width, height };
 }

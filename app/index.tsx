@@ -5,7 +5,7 @@ import { ActivityIndicator, StyleSheet, View } from "react-native";
 import Animated, { BounceIn } from "react-native-reanimated";
 import { initializePomodoroSettings } from "../utils/initApp";
 
-const index = () => {
+const Index = () => {
   const [ready, setReady] = useState(false);
   const router = useRouter();
 
@@ -23,7 +23,7 @@ const index = () => {
         router.push("/welcome");
       }, 2000);
     }
-  }, [ready]);
+  }, [ready, router]);
 
   return (
     <View style={styles.container}>
@@ -38,7 +38,7 @@ const index = () => {
   );
 };
 
-export default index;
+export default Index;
 
 const styles = StyleSheet.create({
   container: {

@@ -1,24 +1,51 @@
 import { colors } from "@/constants/theme";
+import { updatePomodoroHistory } from "@/storage/pomodoroHistory";
 import { getPomodoroSettings } from "@/storage/pomodoroStorage";
 import { BreakOverlayProps } from "@/types";
+import {
+  formatDate,
+  formatTime,
+  getCurrentDate,
+  useOrientation,
+} from "@/utils/common";
 import { verticalScale } from "@/utils/styling";
-import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
-import React, { useEffect, useState } from "react";
+// import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
+import React, { useCallback, useEffect, useState } from "react";
 import { Modal, StyleSheet, View } from "react-native";
-import Button from "./Button";
-import Typo from "./Typo";
+import Button from "../components/Button";
+import Typo from "../components/Typo";
 
 const BreakOverlay = ({ visible, onFinish, type }: BreakOverlayProps) => {
+  const { isLandscape } = useOrientation();
+
   const [timeLeft, setTimeLeft] = useState(0 * 60);
   const [text, setText] = useState<string>("");
   const [duration, setDuration] = useState<number>(20 * 60);
   const [isRunning, setIsRunning] = useState(false);
+  const [workDuration, setWorkDuration] = useState<number>(20 * 60);
+  const [shortBreak, setShortBreak] = useState<number>(20 * 60);
+  const [longBreak, setLongBreak] = useState<number>(20 * 60);
+
+  const historyUpdate = useCallback(() => {
+    const historyObj = {
+      date: formatDate(getCurrentDate()),
+      cycle: 1,
+      focusMinutes: workDuration * 4,
+      breakMinutes: shortBreak * 3 + longBreak,
+    };
+    updatePomodoroHistory(
+      historyObj.date,
+      historyObj.cycle,
+      historyObj.focusMinutes,
+      historyObj.breakMinutes
+    );
+  }, [workDuration, longBreak, shortBreak]);
 
   useEffect(() => {
     if (visible) {
-      activateKeepAwakeAsync();
+      // activateKeepAwakeAsync();
     } else {
-      deactivateKeepAwake();
+      // deactivateKeepAwake();
     }
   }, [visible]);
 
@@ -37,7 +64,18 @@ const BreakOverlay = ({ visible, onFinish, type }: BreakOverlayProps) => {
         setText("");
         setDuration(10 * 60);
       }
-      setDuration(0.1);
+
+      if (settings?.work) {
+        setWorkDuration(settings.work);
+      }
+      if (settings?.shortBreak) {
+        setShortBreak(settings.shortBreak);
+      }
+      if (settings?.longBreak) {
+        setLongBreak(settings.longBreak);
+      }
+
+      setDuration(0.1); // remove
       setTimeLeft(duration * 60);
       setIsRunning(true);
     })();
@@ -53,29 +91,25 @@ const BreakOverlay = ({ visible, onFinish, type }: BreakOverlayProps) => {
     } else if (timeLeft === 0 && isRunning) {
       setIsRunning(false);
       if (type === "longBreak") {
-        onFinish(true);
+        // historyUpdate();
+        // onFinish(true);
       } else {
-        onFinish(false);
+        // onFinish(false);
       }
     }
 
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isRunning, timeLeft, onFinish, type]);
+  }, [isRunning, timeLeft, onFinish, type, historyUpdate]);
 
   useEffect(() => {
     if (visible) setTimeLeft(duration);
   }, [visible, duration]);
 
-  const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s < 10 ? "0" : ""}${s}`;
-  };
-
   const onDismissed = () => {
     if (type === "longBreak") {
+      historyUpdate();
       onFinish(true);
     } else {
       onFinish(false);
@@ -86,30 +120,40 @@ const BreakOverlay = ({ visible, onFinish, type }: BreakOverlayProps) => {
 
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
-      <View style={styles.overlay}>
+      <View
+        style={[
+          styles.overlay,
+          {
+            flexDirection: isLandscape ? "row" : "column",
+            justifyContent: isLandscape ? "space-around": "center",
+          },
+        ]}
+      >
         <View>
           {type === "shortBreak" ? (
-            <Typo size={verticalScale(72)}>☕</Typo>
-            ) : (
-              <Typo size={verticalScale(72)}>🌴</Typo>
-            )}
+            <Typo size={verticalScale(isLandscape ? 150 : 72)}>☕</Typo>
+          ) : (
+            <Typo size={verticalScale(isLandscape ? 150 : 72)}>🌴</Typo>
+          )}
         </View>
-        <View>
-          <Typo size={48} color={colors.white} fontWeight={"bold"}>
-            {text}
-          </Typo>
-        </View>
-        <View>
-          <Typo size={60} color={colors.white} fontWeight={"bold"}>
-            {formatTime(timeLeft)}
-          </Typo>
-        </View>
-        <View>
-          <Button style={styles.dismissButton} onPress={onDismissed}>
-            <Typo color={colors.black} fontWeight={"bold"}>
-              DISMISS
+        <View style={{alignItems: "center"}}>
+          <View>
+            <Typo size={48} color={colors.white} fontWeight={"bold"}>
+              {text}
             </Typo>
-          </Button>
+          </View>
+          <View>
+            <Typo size={60} color={colors.white} fontWeight={"bold"}>
+              {formatTime(timeLeft)}
+            </Typo>
+          </View>
+          <View>
+            <Button style={styles.dismissButton} onPress={onDismissed}>
+              <Typo color={colors.black} fontWeight={"bold"}>
+                DISMISS
+              </Typo>
+            </Button>
+          </View>
         </View>
       </View>
     </Modal>

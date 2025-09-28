@@ -1,27 +1,33 @@
 import Header from "@/components/Header";
 import Typo from "@/components/Typo";
 import { colors } from "@/constants/theme";
+import { useOrientation } from "@/utils/common";
 import { verticalScale } from "@/utils/styling";
-import { useRouter } from 'expo-router';
+import { useRouter } from "expo-router";
 import { PlusIcon } from "phosphor-react-native";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-const welcome = () => {
+const Welcome = () => {
   const router = useRouter();
+  const { isLandscape } = useOrientation();
+
   let newCycle = () => {
     router.push("/cycle");
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <>
       {/* Header */}
       <Header />
       {/* Home Page Content */}
       <View style={styles.pageContent}>
         {/* Text */}
-        <Typo size={32} color={colors.primary} style={{ textAlign: "center" }}>
+        <Typo
+          size={isLandscape ? 22 : 32}
+          color={colors.primary}
+          style={{ textAlign: "center" }}
+        >
           Click the plus to begin a cycle
         </Typo>
         {/* Button */}
@@ -36,18 +42,17 @@ const welcome = () => {
         </TouchableOpacity>
         <View></View>
       </View>
-    </SafeAreaView>
+    </>
   );
 };
 
-export default welcome;
+export default Welcome;
 
 const styles = StyleSheet.create({
   logoContainer: {
     justifyContent: "center",
     alignItems: "center",
   },
-
   pageContent: {
     flex: 1,
     flexDirection: "column",

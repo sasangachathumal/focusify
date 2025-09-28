@@ -31,7 +31,6 @@ export type BreakOverlayProps = {
   type: "shortBreak" | "longBreak";
 };
 
-
 export type TypoProps = {
   size?: number;
   color?: string;
@@ -39,6 +38,16 @@ export type TypoProps = {
   children: any | null;
   style?: TextStyle;
   textProps?: TextProps;
+};
+
+export type StatsPageProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export type StatsPageContextType = {
+  openStats: () => void;
+  closeStats: () => void;
 };
 
 export type IconComponent = React.ComponentType<{
