@@ -1,17 +1,17 @@
 // SettingsSheetProvider.tsx
 import { SettingsSheetContextType } from '@/types';
 import {
-    BottomSheetModal,
-    BottomSheetModalProvider,
+  BottomSheetModal,
+  BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
 import React, {
-    createContext,
-    ReactNode,
-    useCallback,
-    useContext,
-    useRef
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useRef
 } from 'react';
-import SettingsSheet from './settingsSheet';
+import SettingsSheet from '../app/settingsSheet';
 
 const SettingsSheetContext = createContext<SettingsSheetContextType | undefined>(undefined);
 

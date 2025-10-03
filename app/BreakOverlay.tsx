@@ -9,7 +9,7 @@ import {
   useOrientation,
 } from "@/utils/common";
 import { verticalScale } from "@/utils/styling";
-// import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
+import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import React, { useCallback, useEffect, useState } from "react";
 import { Modal, StyleSheet, View } from "react-native";
 import Button from "../components/Button";
@@ -43,9 +43,9 @@ const BreakOverlay = ({ visible, onFinish, type }: BreakOverlayProps) => {
 
   useEffect(() => {
     if (visible) {
-      // activateKeepAwakeAsync();
+      activateKeepAwakeAsync();
     } else {
-      // deactivateKeepAwake();
+      deactivateKeepAwake();
     }
   }, [visible]);
 
@@ -91,10 +91,10 @@ const BreakOverlay = ({ visible, onFinish, type }: BreakOverlayProps) => {
     } else if (timeLeft === 0 && isRunning) {
       setIsRunning(false);
       if (type === "longBreak") {
-        // historyUpdate();
-        // onFinish(true);
+        historyUpdate();
+        onFinish(true);
       } else {
-        // onFinish(false);
+        onFinish(false);
       }
     }
 

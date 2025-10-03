@@ -20,7 +20,7 @@ const Index = () => {
   useEffect(() => {
     if (ready) {
       setTimeout(() => {
-        router.push("/welcome");
+        router.replace("/welcome");
       }, 2000);
     }
   }, [ready, router]);

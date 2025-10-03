@@ -4,7 +4,7 @@ import IconButton from "@/components/IconButton";
 import Typo from "@/components/Typo";
 import { colors, spacingX } from "@/constants/theme";
 import { PomodoroSettings } from "@/types";
-import { formatTimeUnit } from "@/utils/common";
+import { formatTimeUnit, useOrientation } from "@/utils/common";
 import { verticalScale } from "@/utils/styling";
 import {
   BottomSheetBackdrop,
@@ -18,10 +18,15 @@ import {
   getPomodoroSettings,
   savePomodoroSettings,
 } from "../storage/pomodoroStorage";
-import { showNotification } from '../utils/InAppNotifications';
+import { showNotification } from "../utils/InAppNotifications";
 
 const settingsSheet = forwardRef<BottomSheetModal>((_props, ref) => {
-  const snapPoints = useMemo(() => [Dimensions.get("window").height * 0.7], []);
+  const { isLandscape } = useOrientation();
+
+  const snapPoints = useMemo(
+    () => [Dimensions.get("window").height * (isLandscape ? 1 : 0.7)],
+    [isLandscape]
+  );
 
   const [cycleTime, setCycleTime] = useState(20);
   const [cycleBreakTime, setCycleBreakTime] = useState(5);
@@ -112,7 +117,11 @@ const settingsSheet = forwardRef<BottomSheetModal>((_props, ref) => {
       };
       await savePomodoroSettings(defaultSettings);
       console.log("Default Pomodoro settings updated.");
-      showNotification('success', 'Updated!', 'Default Pomodoro settings updated.');
+      showNotification(
+        "success",
+        "Updated!",
+        "Default Pomodoro settings updated."
+      );
     }
   };
 
@@ -131,8 +140,16 @@ const settingsSheet = forwardRef<BottomSheetModal>((_props, ref) => {
         />
       )}
     >
-      <BottomSheetView style={styles.contentContainer}>
-        <View style={styles.titleConteiner}>
+      <BottomSheetView
+        style={[
+          styles.contentContainer,
+          {
+            height: Dimensions.get("window").height * (isLandscape ? 1 : 0.7),
+            padding: isLandscape ? spacingX._10 : spacingX._12,
+          },
+        ]}
+      >
+        <View style={[styles.titleConteiner, { gap: isLandscape ? 0 : 4 }]}>
           <Typo size={28} fontWeight={"bold"} color={colors.primary}>
             Settings
           </Typo>
@@ -140,67 +157,104 @@ const settingsSheet = forwardRef<BottomSheetModal>((_props, ref) => {
             update default settings of the app
           </Typo>
         </View>
-        {/* cycle settings */}
-        <View style={styles.cycleSettings}>
-          <Typo color={colors.primary} size={22} fontWeight={"bold"}>
-            Cycle
-          </Typo>
-          <View style={styles.settingsButtonsContainer}>
-            <IconButton
-              onPress={() => minusCount("cycleTime")}
-              weight="bold"
-              icon={MinusIcon}
-            />
-            <Typo color={colors.primary} size={24}>
-              {formatTimeUnit(cycleTime)} Min
+        <View
+          style={[
+            {
+              flexDirection: isLandscape ? "row" : "column",
+              justifyContent: isLandscape ? "space-around" : "center",
+              flexWrap: "wrap",
+            },
+          ]}
+        >
+          {/* cycle settings */}
+          <View
+            style={[
+              styles.cycleSettings,
+              {
+                maxWidth:
+                  Dimensions.get("window").width * (isLandscape ? 0.4 : 1),
+                marginTop: verticalScale(isLandscape ? 0 : 8),
+              },
+            ]}
+          >
+            <Typo color={colors.primary} size={22} fontWeight={"bold"}>
+              Cycle
             </Typo>
-            <IconButton
-              onPress={() => plusCount("cycleTime")}
-              weight="bold"
-              icon={PlusIcon}
-            />
+            <View style={styles.settingsButtonsContainer}>
+              <IconButton
+                onPress={() => minusCount("cycleTime")}
+                weight="bold"
+                icon={MinusIcon}
+              />
+              <Typo color={colors.primary} size={24}>
+                {formatTimeUnit(cycleTime)} Min
+              </Typo>
+              <IconButton
+                onPress={() => plusCount("cycleTime")}
+                weight="bold"
+                icon={PlusIcon}
+              />
+            </View>
           </View>
-        </View>
-        {/* cycle breake settings */}
-        <View style={styles.cycleSettings}>
-          <Typo color={colors.primary} size={22} fontWeight={"bold"}>
-            Cycle Break
-          </Typo>
-          <View style={styles.settingsButtonsContainer}>
-            <IconButton
-              onPress={() => minusCount("cycleBreak")}
-              weight="bold"
-              icon={MinusIcon}
-            />
-            <Typo color={colors.primary} size={24}>
-              {formatTimeUnit(cycleBreakTime)} Min
+          {/* cycle breake settings */}
+          <View
+            style={[
+              styles.cycleSettings,
+              {
+                maxWidth:
+                  Dimensions.get("window").width * (isLandscape ? 0.4 : 1),
+                marginTop: verticalScale(isLandscape ? 0 : 8),
+              },
+            ]}
+          >
+            <Typo color={colors.primary} size={22} fontWeight={"bold"}>
+              Cycle Break
             </Typo>
-            <IconButton
-              onPress={() => plusCount("cycleBreak")}
-              weight="bold"
-              icon={PlusIcon}
-            />
+            <View style={styles.settingsButtonsContainer}>
+              <IconButton
+                onPress={() => minusCount("cycleBreak")}
+                weight="bold"
+                icon={MinusIcon}
+              />
+              <Typo color={colors.primary} size={24}>
+                {formatTimeUnit(cycleBreakTime)} Min
+              </Typo>
+              <IconButton
+                onPress={() => plusCount("cycleBreak")}
+                weight="bold"
+                icon={PlusIcon}
+              />
+            </View>
           </View>
-        </View>
-        {/* Long break setting */}
-        <View style={styles.cycleSettings}>
-          <Typo color={colors.primary} size={22} fontWeight={"bold"}>
-            Long Break
-          </Typo>
-          <View style={styles.settingsButtonsContainer}>
-            <IconButton
-              onPress={() => minusCount("longBreak")}
-              weight="bold"
-              icon={MinusIcon}
-            />
-            <Typo color={colors.primary} size={24}>
-              {formatTimeUnit(longBreakTime)} Min
+          {/* Long break setting */}
+          <View
+            style={[
+              styles.cycleSettings,
+              {
+                maxWidth:
+                  Dimensions.get("window").width * (isLandscape ? 0.4 : 1),
+                marginTop: verticalScale(isLandscape ? 0 : 8),
+              },
+            ]}
+          >
+            <Typo color={colors.primary} size={22} fontWeight={"bold"}>
+              Long Break
             </Typo>
-            <IconButton
-              onPress={() => plusCount("longBreak")}
-              weight="bold"
-              icon={PlusIcon}
-            />
+            <View style={[styles.settingsButtonsContainer, {marginTop: verticalScale(isLandscape ? 4 : 8)}]}>
+              <IconButton
+                onPress={() => minusCount("longBreak")}
+                weight="bold"
+                icon={MinusIcon}
+              />
+              <Typo color={colors.primary} size={24}>
+                {formatTimeUnit(longBreakTime)} Min
+              </Typo>
+              <IconButton
+                onPress={() => plusCount("longBreak")}
+                weight="bold"
+                icon={PlusIcon}
+              />
+            </View>
           </View>
         </View>
         {/* Save Button */}
@@ -221,24 +275,18 @@ settingsSheet.displayName = "SettingsSheet";
 export default settingsSheet;
 
 const styles = StyleSheet.create({
-  contentContainer: {
-    height: Dimensions.get("window").height * 0.7, // <-- Force it to fill the half screen
-    padding: spacingX._12,
-  },
+  contentContainer: {},
   titleConteiner: {
     display: "flex",
     flexDirection: "column",
-    gap: 4,
     alignItems: "center",
   },
   cycleSettings: {
-    marginTop: verticalScale(8),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
   settingsButtonsContainer: {
-    marginTop: verticalScale(8),
     paddingBottom: spacingX._12,
     width: "100%",
     display: "flex",
