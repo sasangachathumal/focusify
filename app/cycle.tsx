@@ -3,6 +3,7 @@ import IconButton from "@/components/IconButton";
 import Stepper from "@/components/Stepper";
 import Typo from "@/components/Typo";
 import { colors } from "@/constants/theme";
+import { useFocusSession } from "@/providers/focusSessionProvider";
 import { formatTime, useOrientation } from "@/utils/common";
 import { verticalScale } from "@/utils/styling";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
@@ -19,6 +20,7 @@ import BreakOverlay from "./BreakOverlay";
 
 const Cycle = () => {
   const { isLandscape } = useOrientation();
+  const { setIsCycleRunning } = useFocusSession();
 
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
@@ -43,8 +45,8 @@ const Cycle = () => {
     (async () => {
       const settings = await getPomodoroSettings();
       if (settings?.work) {
-        setWorkDuration(0.1 * 60); // update to use settings
-        setTimeLeft(0.1 * 60); // update to use settings
+        setWorkDuration(settings.work * 60); // settings.work or 0.1 for demo
+        setTimeLeft(settings.work * 60); // settings.work or 0.1 for demo
       }
     })();
   }, []);
@@ -102,6 +104,7 @@ const Cycle = () => {
     setTimeLeft(workDuration);
     setIsRunning(true);
     setIsPaused(false);
+    setIsCycleRunning(true);
   };
 
   const pauseTimer = () => {
@@ -110,6 +113,7 @@ const Cycle = () => {
 
   const resumeTimer = () => {
     setIsPaused(false);
+    setIsCycleRunning(true);
   };
 
   const resetTimer = () => {
@@ -117,6 +121,7 @@ const Cycle = () => {
     setIsRunning(false);
     setIsPaused(false);
     setActiveCycle(1);
+    setIsCycleRunning(false);
   };
 
   return (

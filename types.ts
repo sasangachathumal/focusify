@@ -9,6 +9,11 @@ import {
   ViewStyle
 } from "react-native";
 
+export type FocusSessionContextType = {
+  isCycleRunning: boolean;
+  setIsCycleRunning: (v: boolean) => void;
+};
+
 export type PomodoroSettings = {
   work: number;       // in minutes
   shortBreak: number; // in minutes

@@ -1,4 +1,5 @@
 import { colors } from "@/constants/theme";
+import { FocusSessionProvider } from "@/providers/focusSessionProvider";
 import { SettingsSheetProvider } from "@/providers/settingsSheetProvider";
 import { StatsPageProvider } from "@/providers/StatsPageProvider";
 import { Stack } from "expo-router";
@@ -11,19 +12,21 @@ import Toast from "react-native-toast-message";
 const _layout = () => {
   return (
     <GestureHandlerRootView style={styles.root}>
-      <SettingsSheetProvider>
-        <StatsPageProvider>
-          <StatusBar barStyle="light-content" backgroundColor={colors.black} />
-          <SafeAreaView
-            style={styles.safeArea}
-            edges={["left", "right"]}
-          >
-            {/* Your navigation stack */}
-            <Stack screenOptions={{ headerShown: false }} />
-          </SafeAreaView>
-          <Toast />
-        </StatsPageProvider>
-      </SettingsSheetProvider>
+      <FocusSessionProvider>
+        <SettingsSheetProvider>
+          <StatsPageProvider>
+            <StatusBar
+              barStyle="light-content"
+              backgroundColor={colors.black}
+            />
+            <SafeAreaView style={styles.safeArea} edges={["left", "right"]}>
+              {/* Your navigation stack */}
+              <Stack screenOptions={{ headerShown: false }} />
+            </SafeAreaView>
+          </StatsPageProvider>
+        </SettingsSheetProvider>
+      </FocusSessionProvider>
+      <Toast />
     </GestureHandlerRootView>
   );
 };

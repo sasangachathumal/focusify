@@ -74,8 +74,8 @@ const BreakOverlay = ({ visible, onFinish, type }: BreakOverlayProps) => {
       if (settings?.longBreak) {
         setLongBreak(settings.longBreak);
       }
-
-      setDuration(0.1); // remove
+      
+      // remove or add setDuration(0.1) for demo
       setTimeLeft(duration * 60);
       setIsRunning(true);
     })();
